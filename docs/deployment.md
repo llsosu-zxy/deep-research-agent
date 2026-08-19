@@ -36,14 +36,21 @@ on push and pull requests.
 ## Hugging Face Space
 
 1. Create a Gradio Space with Python 3.12.
-2. Push this repository to the Space.
-3. Keep `hf_space_app.py` at the Space root.
-4. Add Space secrets for `LLM_BASE_URL` and `LLM_API_KEY` when using a real
+2. Run `python scripts\package_hf_space.py` to create `dist/hf_space.zip`.
+3. Upload the zip contents to the Space (or push this repository).
+4. Keep `hf_space_app.py` at the Space root.
+5. Add Space secrets for `LLM_BASE_URL` and `LLM_API_KEY` when using a real
    OpenAI-compatible provider.
-5. The default mock mode runs on the free CPU tier; GPU accelerators are only
+6. The default mock mode runs on the free CPU tier; GPU accelerators are only
    needed for BGE-M3/reranker or LoRA fine-tuning.
 
 See `hf_space/README.md` for the file checklist.
+
+For an offline copy of the whole repository, create a Git bundle:
+
+```powershell
+git bundle create dist\deep-research-agent.bundle --all
+```
 
 ## Real LLM / RAGAS
 
