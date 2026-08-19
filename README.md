@@ -48,6 +48,9 @@ Start the Gradio UI:
 python ui\gradio_app.py
 ```
 
+On Windows you can also double-click `start-ui.bat` for the UI or
+`start-api.bat` for the API.
+
 ## Configuration
 
 Copy `.env.example` to `.env` to enable real LLM calls:
