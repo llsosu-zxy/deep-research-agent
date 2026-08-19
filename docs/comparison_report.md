@@ -6,8 +6,8 @@
 |---|---|---|---|
 | cases | 103 | 103 | +0.0000 |
 | citation_accuracy | 1.0 | 1.0 | +0.0000 |
-| latency_p50_ms | 13.7 | 4.9 | +8.8000 |
-| latency_p95_ms | 20.8 | 6.6 | +14.2000 |
+| latency_p50_ms | 8.4 | 2.7 | +5.7000 |
+| latency_p95_ms | 11.5 | 3.6 | +7.9000 |
 | mean_answer_coverage | 0.7087 | 0.6521 | +0.0566 |
 | multi_hop_synthesis_rate | 1.0 | 0.0 | +1.0000 |
 | passed_critique_rate | 1.0 | 1.0 | +0.0000 |
