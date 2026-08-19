@@ -24,4 +24,5 @@ Mapping of the six-week plan in `LLM_Agent项目方案.md` to the current reposi
 | Week 5: tech blog | Draft done | `docs/blog_draft.md` |
 | LLM-as-Judge evaluation adapter | Done (optional) | `eval/judge.py` |
 | Week 6: README + resume bullets + interview prep | Done | `README.md`, `docs/resume_notes.md` |
-| GPU-heavy LoRA fine-tuning | Gated, intentionally not run | `scripts/train_lora.py` |
+| GPU-heavy LoRA fine-tuning | Done (20-step Qwen2.5-1.5B LoRA) | `docs/gpu_report.md`, `data/lora/tool-calling-1.5b` |
+| BGE-M3 embedding + reranker on GPU | Done | `docs/gpu_report.md`, `data/storage/index-bge-m3.json` |

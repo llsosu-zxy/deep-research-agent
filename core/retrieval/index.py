@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -42,6 +43,47 @@ class RetrievalIndex:
             chunks.extend(doc_chunks)
         return cls(chunks, embedder)
 
+    def to_json(self, path: Path) -> None:
+        payload = {
+            "alpha": self.alpha,
+            "chunks": [chunk.to_dict() | {"embedding": chunk.embedding} for chunk in self.chunks],
+        }
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    @classmethod
+    def from_json(cls, path: Path, embedder: Embedder | None = None) -> RetrievalIndex:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        chunks: list[Chunk] = []
+        for item in payload["chunks"]:
+            chunk = Chunk(
+                id=item["id"],
+                doc_id=item["doc_id"],
+                text=item["text"],
+                metadata=item.get("metadata", {}),
+                tokens=item.get("tokens", []),
+                embedding=item.get("embedding"),
+            )
+            chunks.append(chunk)
+        return cls(chunks, embedder=embedder, alpha=float(payload.get("alpha", 0.6)))
+
+    @classmethod
+    def load_or_build(
+        cls,
+        corpus_dir: Path,
+        cache_path: Path | None = None,
+        embedder: Embedder | None = None,
+    ) -> RetrievalIndex:
+        if cache_path is not None and cache_path.exists() and embedder is not None:
+            try:
+                return cls.from_json(cache_path, embedder)
+            except (json.JSONDecodeError, KeyError):
+                pass
+        index = cls.from_corpus(corpus_dir, embedder)
+        if cache_path is not None and embedder is not None:
+            index.to_json(cache_path)
+        return index
+
     def _cosine(self, a: list[float], b: list[float]) -> float:
         dot = sum(x * y for x, y in zip(a, b))
         return float(dot)
@@ -52,6 +94,8 @@ class RetrievalIndex:
         top_k: int = 5,
         alpha: float | None = None,
         reranker: str = "identity",
+        reranker_model: str = "",
+        reranker_device: str = "cpu",
     ) -> list[RankedChunk]:
         if not self.chunks:
             return []
@@ -72,7 +116,7 @@ class RetrievalIndex:
             key=lambda item: item.score,
             reverse=True,
         )[: max(top_k * 2, top_k)]
-        reranker_obj = make_reranker(reranker)
+        reranker_obj = make_reranker(reranker, reranker_model, reranker_device)
         return reranker_obj.rerank(query, ranked, top_k)
 
     def to_sources(self, items: Sequence[RankedChunk]) -> list[Source]:

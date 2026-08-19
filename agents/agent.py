@@ -6,6 +6,7 @@ from agents.brain import AgentBrain
 from agents.graph import ResearchGraph
 from core.config import Settings
 from core.models import GraphState, Plan
+from core.retrieval.embeddings import make_embedder
 from core.retrieval.index import RetrievalIndex
 from core.tools.pdf import build_pdf_parse_tool
 from core.tools.python_sandbox import build_python_sandbox_tool
@@ -31,10 +32,31 @@ class ResearchAgent:
         approval_callback: Callable[[Plan], bool] | None = None,
     ) -> None:
         self.settings = settings or Settings.from_env()
-        self.index = index or RetrievalIndex.from_corpus(self.settings.corpus_dir)
+        if index is not None:
+            self.index = index
+        elif self.settings.embedding_mode == "hash":
+            self.index = RetrievalIndex.from_corpus(self.settings.corpus_dir)
+        else:
+            embedder = make_embedder(
+                self.settings.embedding_mode,
+                self.settings.embedding_model,
+                self.settings.embedding_device,
+            )
+            cache_path = self.settings.cache_dir / "index.json"
+            self.index = RetrievalIndex.load_or_build(
+                self.settings.corpus_dir,
+                cache_path,
+                embedder,
+            )
         self.registry = ToolRegistry()
         self.registry.register(
-            build_retrieve_tool(self.index, top_k=self.settings.retrieval_top_k)
+            build_retrieve_tool(
+                self.index,
+                top_k=self.settings.retrieval_top_k,
+                reranker=self.settings.reranker,
+                reranker_model=self.settings.reranker_model,
+                reranker_device=self.settings.reranker_device,
+            )
         )
         self.registry.register(build_web_search_tool())
         self.registry.register(build_fetch_url_tool())

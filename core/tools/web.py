@@ -6,9 +6,21 @@ from core.retrieval.index import RetrievalIndex
 from core.tools.registry import Tool
 
 
-def build_retrieve_tool(index: RetrievalIndex, top_k: int = 5) -> Tool:
+def build_retrieve_tool(
+    index: RetrievalIndex,
+    top_k: int = 5,
+    reranker: str = "identity",
+    reranker_model: str = "",
+    reranker_device: str = "cpu",
+) -> Tool:
     def retrieve(query: str, k: int = top_k) -> dict[str, Any]:
-        ranked = index.search(query, top_k=int(k))
+        ranked = index.search(
+            query,
+            top_k=int(k),
+            reranker=reranker,
+            reranker_model=reranker_model,
+            reranker_device=reranker_device,
+        )
         return {
             "query": query,
             "results": [

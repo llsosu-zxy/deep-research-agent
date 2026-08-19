@@ -5,9 +5,11 @@ __pycache__/
 .ruff_cache/
 .env
 data/storage/*.jsonl
+data/storage/index*.json
 data/storage/*.db
 data/storage/*.sqlite
 data/vector/
+data/lora/
 *.log
 dist/
 build/

@@ -28,6 +28,7 @@ class Settings:
     embedding_device: str = "cpu"
     reranker: str = "identity"  # identity | cross-encoder
     reranker_model: str = "BAAI/bge-reranker-base"
+    reranker_device: str = "cpu"
     max_tool_steps: int = 12
     max_critic_iterations: int = 2
     daily_budget_usd: float = 0.50
@@ -53,6 +54,7 @@ class Settings:
             embedding_device=os.getenv("EMBEDDING_DEVICE", "cpu").strip(),
             reranker=os.getenv("RERANKER", "identity").strip().lower(),
             reranker_model=os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-base").strip(),
+            reranker_device=os.getenv("RERANKER_DEVICE", "cpu").strip(),
             max_tool_steps=_env_int("MAX_TOOL_STEPS", 12),
             max_critic_iterations=_env_int("MAX_CRITIC_ITERATIONS", 2),
             daily_budget_usd=float(os.getenv("DAILY_BUDGET_USD", "0.50")),

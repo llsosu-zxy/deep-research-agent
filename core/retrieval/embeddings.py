@@ -50,6 +50,26 @@ class SentenceTransformerEmbedder:
         return self.model.encode(texts, normalize_embeddings=True).tolist()
 
 
+class FlagEmbeddingEmbedder:
+    """BGE-M3 embedder backed by FlagEmbedding when available."""
+
+    def __init__(self, model_name: str, device: str = "cpu") -> None:
+        try:
+            from FlagEmbedding import BGEM3FlagModel
+        except ImportError as exc:  # pragma: no cover - depends on optional deps
+            raise RuntimeError("FlagEmbedding is not installed") from exc
+        self.model = BGEM3FlagModel(
+            model_name,
+            use_fp16=device.startswith("cuda"),
+            devices=device if device != "cpu" else None,
+        )
+        self.dimension = 1024
+
+    def encode(self, texts: list[str]) -> list[list[float]]:
+        output = self.model.encode(texts, return_dense=True, max_length=8192)
+        return output["dense_vecs"].tolist()
+
+
 def make_embedder(
     mode: str,
     model_name: str = "BAAI/bge-m3",
@@ -57,6 +77,11 @@ def make_embedder(
 ) -> Embedder:
     if mode == "hash":
         return HashEmbedder()
-    if mode in {"sentence-transformers", "bge-m3", "local"}:
+    if mode == "bge-m3":
+        try:
+            return FlagEmbeddingEmbedder(model_name, device)
+        except RuntimeError:
+            return SentenceTransformerEmbedder(model_name, device)
+    if mode in {"sentence-transformers", "local"}:
         return SentenceTransformerEmbedder(model_name, device)
     raise ValueError(f"Unknown embedding mode: {mode}")

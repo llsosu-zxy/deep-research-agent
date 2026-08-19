@@ -21,6 +21,7 @@ is directly useful while applying for AI internships.
 - FastAPI REST + WebSocket API and a Gradio UI.
 - Docker Compose and GitHub Actions CI.
 - Offline mock mode that runs without API keys, GPU or network.
+- Verified GPU path: BGE-M3 embeddings, bge-reranker and Qwen LoRA fine-tuning.
 
 ## Quickstart
 
@@ -101,6 +102,26 @@ percentage points, because the planner decomposes questions by entity and the
 critic forces synthesis. Full comparison:
 `docs/comparison_report.md`. Metrics should be re-measured after enabling real
 LLM/embedding/reranker models.
+
+GPU results for BGE-M3, reranking and LoRA fine-tuning are recorded in
+`docs/gpu_report.md`.
+
+## GPU Path
+
+Install CUDA-enabled PyTorch for your platform, then:
+
+```powershell
+pip install -e ".[gpu]"
+python scripts\build_embedding_index.py --mode bge-m3 --device cuda
+$env:EMBEDDING_MODE="bge-m3"
+$env:EMBEDDING_DEVICE="cuda"
+$env:RERANKER="cross-encoder"
+$env:RERANKER_DEVICE="cuda"
+python scripts\run_demo.py
+```
+
+The LoRA fine-tuning step is `python scripts\train_lora.py` with
+`RUN_GPU_STEP=1`; the adapter is written to `data/lora/tool-calling-1.5b`.
 
 ## Corpus
 
