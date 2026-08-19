@@ -204,8 +204,7 @@ class AgentBrain:
             [
                 {"role": "system", "content": system},
                 {"role": "user", "content": question},
-            ],
-            tools=self.registry.schemas(),
+            ]
         )
         subtasks = [
             SubTask(

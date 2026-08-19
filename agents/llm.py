@@ -21,7 +21,7 @@ class OpenAICompatibleLLM:
         base_url: str,
         api_key: str,
         model: str,
-        timeout: float = 30.0,
+        timeout: float = 120.0,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -33,6 +33,7 @@ class OpenAICompatibleLLM:
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]] | None = None,
         temperature: float = 0.2,
+        max_tokens: int | None = None,
     ) -> LLMResponse:
         try:
             import httpx
@@ -42,6 +43,7 @@ class OpenAICompatibleLLM:
             "model": self.model,
             "messages": messages,
             "temperature": temperature,
+            "max_tokens": max_tokens if max_tokens is not None else 2048,
         }
         if tools:
             payload["tools"] = tools
@@ -77,11 +79,36 @@ class OpenAICompatibleLLM:
             completion_tokens=int(usage.get("completion_tokens", 0)),
         )
 
-    def complete_json(self, messages: list[dict[str, Any]], tools: list[dict[str, Any]] | None = None) -> dict[str, Any]:
-        response = self.complete(messages, tools=tools)
-        text = response.content.strip()
-        if text.startswith("```"):
-            text = text.strip("`")
-            if text.startswith("json"):
-                text = text[4:].strip()
-        return json.loads(text)
+    def complete_json(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]] | None = None,
+        retries: int = 2,
+    ) -> dict[str, Any]:
+        last_error: Exception | None = None
+        for _ in range(retries):
+            response = self.complete(messages, tools=tools, max_tokens=4096)
+            if response.tool_calls:
+                arguments = response.tool_calls[0].get("arguments", {})
+                if isinstance(arguments, dict) and arguments:
+                    return arguments
+            text = response.content.strip()
+            if text.startswith("```"):
+                text = text.strip("`")
+                if text.startswith("json"):
+                    text = text[4:].strip()
+            start = text.find("{")
+            end = text.rfind("}")
+            if start != -1 and end != -1 and end > start:
+                text = text[start : end + 1]
+            if not text:
+                last_error = ValueError("LLM returned empty JSON")
+                continue
+            try:
+                return json.loads(text)
+            except json.JSONDecodeError as exc:
+                last_error = exc
+                continue
+        if last_error is not None:
+            raise last_error
+        raise ValueError("LLM returned empty JSON")

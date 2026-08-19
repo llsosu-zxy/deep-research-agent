@@ -4,6 +4,13 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:  # pragma: no cover - dotenv is optional at runtime
+    pass
+
 
 def _env_int(name: str, default: int) -> int:
     raw = os.getenv(name)

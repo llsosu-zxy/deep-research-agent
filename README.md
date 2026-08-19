@@ -109,6 +109,23 @@ LLM/embedding/reranker models.
 GPU results for BGE-M3, reranking and LoRA fine-tuning are recorded in
 `docs/gpu_report.md`.
 
+## Real LLM Evaluation
+
+DeepSeek `deepseek-v4-flash` was used for a 10-question real-LLM regression:
+
+| Metric | Value |
+|---|---|
+| Cases | 10 |
+| Mean answer coverage | 85% |
+| Multi-hop synthesis rate | 50% |
+| Citation accuracy | 80% |
+| Tool success rate | 100% |
+| Critique pass rate | 80% |
+| p50 latency | 21.0 s |
+| p95 latency | 70.3 s |
+
+Full report: `docs/eval_report_real.md`.
+
 ## Demo Video
 
 Recorded demo (1:39, 720p, ~3.7 MB):
