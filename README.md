@@ -92,8 +92,8 @@ The offline golden regression on the 103-question corpus reports:
 | Citation accuracy | 100% |
 | Tool success rate | 100% |
 | Critique pass rate | 100% |
-| p50 latency | 13.8 ms |
-| p95 latency | 20.7 ms |
+| p50 latency | 8.5 ms |
+| p95 latency | 12.3 ms |
 
 These numbers are the offline baseline with the mock LLM and hash embeddings.
 The agent achieves 100% multi-hop synthesis on the same set while the
