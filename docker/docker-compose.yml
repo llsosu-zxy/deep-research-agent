@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      LLM_PROVIDER: mock
+      EMBEDDING_MODE: hash
+    volumes:
+      - ../data:/app/data
+
+  ui:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ["python", "ui/gradio_app.py", "--host", "0.0.0.0", "--port", "7860"]
+    ports:
+      - "7860:7860"
+    environment:
+      LLM_PROVIDER: mock
+      EMBEDDING_MODE: hash
