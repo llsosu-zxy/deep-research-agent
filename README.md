@@ -134,6 +134,14 @@ Recorded demo (1:39, 720p, ~3.7 MB):
 
 The narration outline is in `docs/demo_script.md`.
 
+## Project Status
+
+The project is complete and fully runnable locally. GitHub CI is green, a
+real-LLM DeepSeek v4-flash evaluation is included, and the demo video is
+published in this repository. Hugging Face Space deployment and RAGAS are
+optional extras; their setup is documented but not required for the core
+deliverable.
+
 ## GPU Path
 
 Install CUDA-enabled PyTorch for your platform, then:
