@@ -109,6 +109,14 @@ LLM/embedding/reranker models.
 GPU results for BGE-M3, reranking and LoRA fine-tuning are recorded in
 `docs/gpu_report.md`.
 
+## Demo Video
+
+Recorded demo (1:39, 720p, ~3.7 MB):
+
+[Download agent-demo.mp4](assets/agent-demo.mp4)
+
+The narration outline is in `docs/demo_script.md`.
+
 ## GPU Path
 
 Install CUDA-enabled PyTorch for your platform, then:
