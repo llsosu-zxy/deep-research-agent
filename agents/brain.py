@@ -95,7 +95,14 @@ def _merge_by_doc(results: list[dict]) -> list[dict]:
     merged = []
     for group in groups.values():
         item = group["item"]
-        raw = "\n".join(group["snippets"][:3])
+        snippets = group["snippets"]
+        salary_snippets = [
+            snippet
+            for snippet in snippets
+            if "S$" in snippet or "薪资" in snippet or "compensation" in snippet.lower()
+        ]
+        ordered = salary_snippets + [snippet for snippet in snippets if snippet not in salary_snippets]
+        raw = "\n".join(ordered[:6])
         seen: set[str] = set()
         clean_lines: list[str] = []
         for line in raw.splitlines():
@@ -103,7 +110,7 @@ def _merge_by_doc(results: list[dict]) -> list[dict]:
             if stripped and stripped not in seen:
                 seen.add(stripped)
                 clean_lines.append(stripped)
-        item["snippet"] = "\n".join(clean_lines)[:1600]
+        item["snippet"] = "\n".join(clean_lines)[:2400]
         merged.append(item)
     return merged
 
@@ -260,9 +267,10 @@ class AgentBrain:
                 subtask.error = f"no evidence found for {entity}"
                 subtask.duration_ms = (time.perf_counter() - started) * 1000
                 return "", [], result
-            results = filtered[: min(3, len(filtered))]
+            results = filtered[: min(12, len(filtered))]
 
         results = _merge_by_doc(results)
+        results = results[: min(3, len(results))]
         sources: list[Source] = []
         for item in results:
             source = Source(

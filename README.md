@@ -87,17 +87,17 @@ The offline golden regression on the 103-question corpus reports:
 | Metric | Value |
 |---|---|
 | Cases | 103 |
-| Mean answer coverage | 70.9% |
+| Mean answer coverage | 80.4% |
 | Multi-hop synthesis rate | 100% |
 | Citation accuracy | 100% |
 | Tool success rate | 100% |
 | Critique pass rate | 100% |
-| p50 latency | 8.5 ms |
-| p95 latency | 12.3 ms |
+| p50 latency | 8.8 ms |
+| p95 latency | 11.3 ms |
 
 These numbers are the offline baseline with the mock LLM and hash embeddings.
 The agent achieves 100% multi-hop synthesis on the same set while the
-single-turn RAG baseline scores 0%, and mean answer coverage improves by 5.7
+single-turn RAG baseline scores 0%, and mean answer coverage improves by 15.2
 percentage points, because the planner decomposes questions by entity and the
 critic forces synthesis. Full comparison:
 `docs/comparison_report.md`. Metrics should be re-measured after enabling real
