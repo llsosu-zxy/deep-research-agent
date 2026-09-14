@@ -10,6 +10,7 @@ data/storage/*.db
 data/storage/*.sqlite
 data/vector/
 data/lora/
+docs/render_manual/
 *.log
 dist/
 build/
